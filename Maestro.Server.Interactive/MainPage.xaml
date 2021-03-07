@@ -1,0 +1,23 @@
+﻿<Page
+    x:Class="Maestro.Server.Interactive.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Maestro.Server.Interactive"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <TextBox x:Name="logout"
+                 Background="#ff282828"
+                 Foreground="#8833ff00"
+                 IsReadOnly="True">
+            <TextBox.Resources>
+                <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#ff282828" Opacity="0.2"/>
+                <SolidColorBrush x:Key="TextControlForegroundFocused" Color="#8833ff00"/>
+                <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent" Opacity="0.2"/>
+            </TextBox.Resources>
+        </TextBox>
+    </Grid>
+</Page>
