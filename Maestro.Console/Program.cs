@@ -1,6 +1,7 @@
 ﻿using Maestro.Client;
 using System;
 using System.Threading.Tasks;
+using Terminal = System.Console;
 
 namespace Maestro.Console
 {
@@ -10,6 +11,23 @@ namespace Maestro.Console
         {
             var client = new TcpMaestroClient();
             await client.ConnectAsync("192.168.86.63", 4321).ConfigureAwait(false);
+            
+            client.Error
+                  .Subscribe(ex =>
+                  {
+                      Terminal.ForegroundColor = ConsoleColor.Red;
+                      Terminal.WriteLine($"** {ex.Message}");
+                      Terminal.ResetColor();
+                  });
+
+            client.Status
+                  .Subscribe(isAwake =>
+                  {
+                      Terminal.ForegroundColor = ConsoleColor.Green;
+                      var stat = isAwake ? "Awake" : "Asleep";
+                      Terminal.WriteLine($"> {stat}");
+                      Terminal.ResetColor();
+                  });
             System.Console.WriteLine("Connected AF");
             bool gettin = true;
             do
@@ -17,23 +35,21 @@ namespace Maestro.Console
                 System.Console.Write("?");
                 var cmd = System.Console.ReadKey();
                 System.Console.WriteLine();
-                var response = string.Empty;
                 switch (cmd.KeyChar)
                 {
                     case 's':
-                        response = await client.GetStatusAsync().ConfigureAwait(false);
+                        await client.GetStatusAsync().ConfigureAwait(false);
                         break;
                     case '+':
-                        response = await client.WakeAsync().ConfigureAwait(false);
+                        await client.WakeAsync().ConfigureAwait(false);
                         break;
                     case '-':
-                        response = await client.SleepAsync().ConfigureAwait(false);
+                        await client.SleepAsync().ConfigureAwait(false);
                         break;
                     case 'q':
                         gettin = false;
                         break;
                 }
-                System.Console.WriteLine($"> {response}");
             } while (gettin);
         }
     }
