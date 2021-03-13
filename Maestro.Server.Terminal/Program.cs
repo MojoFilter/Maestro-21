@@ -13,6 +13,8 @@ namespace Maestro.Server.Terminal
         static async Task Main(string[] args)
         {
             Console.WriteLine("Creating Server...");
+            var discoveryServer = new UdpMaestroDiscoveryServer();
+            discoveryServer.Start();
             var server = new TcpMaestroServer(new GpioMaestroController());
             server.Status.Subscribe(status => Console.WriteLine(status));
             var cancellationSource = new CancellationTokenSource();

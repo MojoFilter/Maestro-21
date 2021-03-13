@@ -9,7 +9,7 @@ namespace Maestro.Server
 {
     public class UdpMaestroDiscoveryServer
     {
-        public async Task StartAsync(CancellationToken cancellationToken = default)
+        public async void Start(CancellationToken cancellationToken = default)
         {
             var maestroId = Encoding.UTF8.GetBytes(Environment.MachineName);
             var server = new UdpClient(5678);
