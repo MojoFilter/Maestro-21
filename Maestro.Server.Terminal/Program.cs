@@ -15,6 +15,7 @@ namespace Maestro.Server.Terminal
             var server = new TcpMaestroServer(new GpioMaestroController());
             var cancellationSource = new CancellationTokenSource();
             await StartServer(server, cancellationSource).ConfigureAwait(false);
+            Console.WriteLine("Awaiting Connections...");
             Console.ReadKey();
         }
 
