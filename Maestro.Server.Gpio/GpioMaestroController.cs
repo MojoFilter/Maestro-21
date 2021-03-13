@@ -1,4 +1,5 @@
 ﻿using System.Device.Gpio;
+using System.Device.Pwm;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,6 +31,9 @@ namespace Maestro.Server.Gpio
             await Task.Yield();
             _controller = new GpioController();
             _controller.OpenPin(LedPinNumber, PinMode.Output);
+
+            _fade = PwmChannel.Create(0, 1, 400, 0.5);
+            _fade.Start();
         }
 
         public bool IsAwake() => _ledStatus;
@@ -40,13 +44,14 @@ namespace Maestro.Server.Gpio
 
         public void SetFade(double percent)
         {
+            _fade.DutyCycle = percent;
             //_fadePin.SetActiveDutyCyclePercentage(percent);
         }
 
         public double GetFade()
         {
             //return _fadePin.GetActiveDutyCyclePercentage();
-            return default;
+            return _fade.DutyCycle;
         }
 
         private void SetLed(bool isOn)
@@ -60,6 +65,7 @@ namespace Maestro.Server.Gpio
         private bool _ledStatus = false;
         //private PwmPin _fadePin;
         private GpioController _controller;
+        private PwmChannel _fade;
         private const int LedPinNumber = 26;
         private const int FadePinNumber = 13;
     }

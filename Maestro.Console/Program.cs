@@ -10,7 +10,7 @@ namespace Maestro.Console
         static async Task Main(string[] args)
         {
             var client = new TcpMaestroClient();
-            await client.ConnectAsync("192.168.86.63", 4321).ConfigureAwait(false);
+            await client.ConnectAsync("192.168.86.68", 4321).ConfigureAwait(false);
             
             client.Error
                   .Subscribe(ex =>
