@@ -22,7 +22,7 @@ namespace Maestro.Desktop
         {
             var client = new TcpMaestroClient();
             this.Client = client;
-            await client.ConnectAsync("192.168.86.69", 4321).ConfigureAwait(false);
+            await client.ConnectAsync("192.168.86.68", 4321).ConfigureAwait(false);
         }
     }
 }

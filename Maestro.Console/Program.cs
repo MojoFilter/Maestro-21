@@ -1,5 +1,6 @@
 ﻿using Maestro.Client;
 using System;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Terminal = System.Console;
 
@@ -9,8 +10,8 @@ namespace Maestro.Console
     {
         static async Task Main(string[] args)
         {
+            var discoveryClient = new UdpMaestroDiscoveryClient();
             var client = new TcpMaestroClient();
-            await client.ConnectAsync("192.168.86.68", 4321).ConfigureAwait(false);
             
             client.Error
                   .Subscribe(ex =>
@@ -41,6 +42,9 @@ namespace Maestro.Console
                     Terminal.ResetColor();
                 });
 
+            var device = await discoveryClient.DiscoverAsync().Take(1);
+            Terminal.WriteLine($"Discovered {device.Name} @ {device.Address}");
+            await client.ConnectAsync(device.Address, 4321).ConfigureAwait(false);
             System.Console.WriteLine("Connected AF");
             await client.GetStatusAsync();
             await client.GetFadeAsync();
