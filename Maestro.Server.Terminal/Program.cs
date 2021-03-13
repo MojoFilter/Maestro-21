@@ -14,6 +14,7 @@ namespace Maestro.Server.Terminal
         {
             Console.WriteLine("Creating Server...");
             var server = new TcpMaestroServer(new GpioMaestroController());
+            server.Status.Subscribe(status => Console.WriteLine(status));
             var cancellationSource = new CancellationTokenSource();
             Console.WriteLine("Starting Server...");
             try 
