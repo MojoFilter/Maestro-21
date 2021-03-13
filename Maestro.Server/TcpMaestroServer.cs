@@ -33,7 +33,7 @@ namespace Maestro.Server
                     {
                         try
                         {
-                            await this.HandleClient(await server.AcceptTcpClientAsync(), cancellationToken);
+                            this.ReadClient(await server.AcceptTcpClientAsync(), cancellationToken);
                         }
                         catch (IOException) { }
                     }
@@ -46,48 +46,58 @@ namespace Maestro.Server
             }
         }
 
-        private async Task HandleClient(TcpClient client, CancellationToken cancellationToken)
+
+        private async void ReadClient(TcpClient client, CancellationToken cancellationToken)
         {
-            await Task.Yield();
-            this.Log($"Client connected from {client.Client.RemoteEndPoint}");
             try
             {
-                using (client)
-                using (var stream = client.GetStream())
-                using (var reader = new StreamReader(stream))
-                using (var writer = new StreamWriter(stream) { AutoFlush = true })
+                var stream = client.GetStream();
+                var buffer = new byte[2];
+                while (client.Connected  && !cancellationToken.IsCancellationRequested)
                 {
-                    while (!cancellationToken.IsCancellationRequested)
+                    var readCount = await stream.ReadAsync(buffer, 0, 2);
+                    switch ((Commands)buffer[0])
                     {
-                        var buffer = new byte[CommandMessageLength];
-                        var readCount = await stream.ReadAsync(buffer, 0, CommandMessageLength, cancellationToken).ConfigureAwait(false);
-                        if (readCount == CommandMessageLength)
-                        {
-                            string response = "nope";
-                            switch ((Commands)buffer[0])
-                            {
-                                case Commands.Wake:
-                                    _controller.Wake();
-                                    goto case Commands.GetStatus;
-                                case Commands.Sleep:
-                                    _controller.Sleep();
-                                    goto case Commands.GetStatus;
-                                case Commands.GetStatus:
-                                    response = this.GetStatus();
-                                    break;
-                            }
-                            await writer.WriteLineAsync(response).ConfigureAwait(false);
-                        }
+                        case Commands.Wake:
+                            _controller.Wake();
+                            await this.SendStatusAsync(stream).ConfigureAwait(false);
+                            break;
+                        case Commands.Sleep:
+                            _controller.Sleep();
+                            await this.SendStatusAsync(stream).ConfigureAwait(false);
+                            break;
+                        case Commands.GetStatus:
+                            await this.SendStatusAsync(stream).ConfigureAwait(false);
+                            break;
+                        case Commands.GetFade:
+                            await this.SendFadeAsync(stream).ConfigureAwait(false);
+                            break;
+                        case Commands.SetFade:
+                            _controller.SetFade(buffer[1] / 255.0);
+                            await this.SendFadeAsync(stream).ConfigureAwait(false);
+                            break;
                     }
                 }
             }
-            finally
-            {
-                this.Log("Client disconnected");
-            }
+            catch (IOException) { }
         }
 
-        private string GetStatus() => _controller.IsAwake() ? "I'm awake!" : "sleep af";
+        private async Task SendFadeAsync(Stream stream)
+        {
+            var fade = (byte)(_controller.GetFade() * 255.0);
+            await this.SendMessageAsync(stream, Commands.UpdateFade, fade).ConfigureAwait(false);
+        }
+
+        private async Task SendStatusAsync(Stream stream)
+        {
+            await this.SendMessageAsync(stream, Commands.UpdateState, (byte)(_controller.IsAwake() ? 0 : 1)).ConfigureAwait(false);
+        }
+
+
+        private async Task SendMessageAsync(Stream stream, Commands cmd, byte argument)
+        {
+            await stream.WriteAsync(new[] { (byte)cmd, argument }, 0, 2).ConfigureAwait(false);
+        }
 
         private void Log(string message)
         {

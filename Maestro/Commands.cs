@@ -4,6 +4,12 @@
     {
         GetStatus,
         Wake,
-        Sleep
+        Sleep,
+        SetFade,
+        GetFade,
+
+        // primarily response messages
+        UpdateState,
+        UpdateFade
     }
 }

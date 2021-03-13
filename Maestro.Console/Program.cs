@@ -16,6 +16,7 @@ namespace Maestro.Console
                   .Subscribe(ex =>
                   {
                       Terminal.ForegroundColor = ConsoleColor.Red;
+                      Terminal.WriteLine();
                       Terminal.WriteLine($"** {ex.Message}");
                       Terminal.ResetColor();
                   });
@@ -25,30 +26,55 @@ namespace Maestro.Console
                   {
                       Terminal.ForegroundColor = ConsoleColor.Green;
                       var stat = isAwake ? "Awake" : "Asleep";
+                      Terminal.WriteLine();
                       Terminal.WriteLine($"> {stat}");
                       Terminal.ResetColor();
                   });
+
+            client.Fade
+                .Subscribe(fade =>
+                {
+                    Terminal.ForegroundColor = ConsoleColor.Cyan;
+                    var pct = Math.Round((fade / 255.0) * 100);
+                    Terminal.WriteLine();
+                    Terminal.WriteLine($"Fade: {pct}%");
+                    Terminal.ResetColor();
+                });
+
             System.Console.WriteLine("Connected AF");
+            await client.GetStatusAsync();
+            await client.GetFadeAsync();
             bool gettin = true;
             do
             {
                 System.Console.Write("?");
                 var cmd = System.Console.ReadKey();
                 System.Console.WriteLine();
-                switch (cmd.KeyChar)
+                if (char.IsDigit(cmd.KeyChar))
                 {
-                    case 's':
-                        await client.GetStatusAsync().ConfigureAwait(false);
-                        break;
-                    case '+':
-                        await client.WakeAsync().ConfigureAwait(false);
-                        break;
-                    case '-':
-                        await client.SleepAsync().ConfigureAwait(false);
-                        break;
-                    case 'q':
-                        gettin = false;
-                        break;
+                    var level = (byte)(((cmd.KeyChar - '0') / 10.0) * 255.0);
+                    await client.SetFadeAsync(level).ConfigureAwait(false);
+                }
+                else
+                {
+                    switch (cmd.KeyChar)
+                    {
+                        case 's':
+                            await client.GetStatusAsync().ConfigureAwait(false);
+                            break;
+                        case 'f':
+                            await client.GetFadeAsync().ConfigureAwait(false);
+                            break;
+                        case '+':
+                            await client.WakeAsync().ConfigureAwait(false);
+                            break;
+                        case '-':
+                            await client.SleepAsync().ConfigureAwait(false);
+                            break;
+                        case 'q':
+                            gettin = false;
+                            break;
+                    }
                 }
             } while (gettin);
         }

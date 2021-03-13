@@ -1,15 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Maestro.Client
 {
-    public class TcpMaestroClient
+    public class TcpMaestroClient : IMaestroClient
     {
         public async Task ConnectAsync(string host, int port)
         {
@@ -20,10 +18,18 @@ namespace Maestro.Client
 
         public IObservable<bool> Status => _status.AsObservable();
 
+        public IObservable<byte> Fade => _fade.AsObservable();
+
         public IObservable<Exception> Error => _error.AsObservable();
 
         public Task GetStatusAsync(CancellationToken cancellationToken = default)
             => this.ExecuteAsync(Commands.GetStatus, 0x0, cancellationToken);
+
+        public Task GetFadeAsync(CancellationToken cancellationToken = default)
+            => this.ExecuteAsync(Commands.GetFade, 0x0, cancellationToken);
+
+        public Task SetFadeAsync(byte level, CancellationToken cancellationToken = default)
+            => this.ExecuteAsync(Commands.SetFade, level, cancellationToken);
 
         public Task WakeAsync(CancellationToken cancellationToken = default)
             => this.ExecuteAsync(Commands.Wake, 0x0, cancellationToken);
@@ -43,11 +49,19 @@ namespace Maestro.Client
             try
             {
                 var stream = _client.GetStream();
-                var reader = new StreamReader(stream);
+                var buffer = new byte[2];
                 while (!_readCanceller.IsCancellationRequested)
                 {
-                    var message = await reader.ReadLineAsync().ConfigureAwait(false);
-                    _status.OnNext(message.StartsWith("I"));
+                    var readCount = await stream.ReadAsync(buffer, 0, 2).ConfigureAwait(false);
+                    switch ((Commands)buffer[0])
+                    {
+                        case Commands.UpdateFade:
+                            _fade.OnNext(buffer[1]);
+                            break;
+                        case Commands.UpdateState:
+                            _status.OnNext(buffer[1] > 0);
+                            break;
+                    }
                 }
             }
             catch (Exception ex)
@@ -58,6 +72,7 @@ namespace Maestro.Client
 
         private readonly ISubject<Exception> _error = new Subject<Exception>();
         private readonly ISubject<bool> _status = new BehaviorSubject<bool>(false);
+        private readonly ISubject<byte> _fade = new BehaviorSubject<byte>(0);
         private TcpClient _client;
         private CancellationTokenSource _readCanceller = new CancellationTokenSource();
     }
