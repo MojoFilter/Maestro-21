@@ -32,7 +32,10 @@ namespace Maestro.Server.Terminal
         {
             await Task.Yield();
             var host = Dns.GetHostEntry(Dns.GetHostName());
-            var ip = host.AddressList.FirstOrDefault(add => add.AddressFamily is AddressFamily.InterNetwork);
+            var ip = host.AddressList
+                         .Where(add => add.AddressFamily is AddressFamily.InterNetwork)
+                         .Where(ip => !IPAddress.IsLoopback(ip))
+                         .FirstOrDefault();
             Console.WriteLine($"Binding to IP {ip}");
             await server.Start(ip, 4321, cancellationSource.Token).ConfigureAwait(false);
         }
