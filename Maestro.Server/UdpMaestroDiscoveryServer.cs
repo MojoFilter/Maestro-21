@@ -19,6 +19,7 @@ namespace Maestro.Server
                 await this.SendAnnouncementAsync().ConfigureAwait(false);
                 while (!cancellationToken.IsCancellationRequested)
                 {
+                    Console.WriteLine("Waiting for a holla");
                     var req = await server.ReceiveAsync().ConfigureAwait(false);
                     Console.WriteLine("Heard a holla");
                     await this.SendAnnouncementAsync().ConfigureAwait(false);
