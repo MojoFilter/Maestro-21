@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,6 +9,8 @@ namespace Maestro
         IObservable<bool> Status { get; }
         IObservable<byte> Fade { get; }
         IObservable<Exception> Error { get; }
+
+        Task ConnectAsync(CancellationToken cancellationToken = default);
 
         Task GetFadeAsync(CancellationToken cancellationToken = default);
         Task GetStatusAsync(CancellationToken cancellationToken = default);

@@ -1,5 +1,8 @@
 ﻿using Maestro.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
+using System.Net;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Terminal = System.Console;
@@ -10,9 +13,20 @@ namespace Maestro.Console
     {
         static async Task Main(string[] args)
         {
-            var discoveryClient = new UdpMaestroDiscoveryClient();
-            var client = new TcpMaestroClient();
-            
+            using var host = ConfigureServices().Build();
+            await host.StartAsync().ConfigureAwait(false);
+
+            var discoveryClient = host.Services.GetRequiredService<IMaestroDiscoveryClient>();
+            var clientFactory = host.Services.GetRequiredService<IMaestroClientFactory>();
+            //var client = host.Services.GetRequiredService<IMaestroClient>();
+
+            Terminal.WriteLine("Listening for servers");
+            var device = await discoveryClient.DiscoverAsync().Take(1);
+            Terminal.WriteLine($"Discovered {device.Name} @ {device.Address}");
+            var client = clientFactory.NewTcpMaestroClient(IPAddress.Parse(device.Address));
+            await client.ConnectAsync().ConfigureAwait(false);
+            System.Console.WriteLine("Connected AF");
+
             client.Error
                   .Subscribe(ex =>
                   {
@@ -41,11 +55,7 @@ namespace Maestro.Console
                     Terminal.WriteLine($"Fade: {pct}%");
                     Terminal.ResetColor();
                 });
-
-            var device = await discoveryClient.DiscoverAsync().Take(1);
-            Terminal.WriteLine($"Discovered {device.Name} @ {device.Address}");
-            await client.ConnectAsync(device.Address, 4321).ConfigureAwait(false);
-            System.Console.WriteLine("Connected AF");
+            
             await client.GetStatusAsync();
             await client.GetFadeAsync();
             bool gettin = true;
@@ -81,6 +91,14 @@ namespace Maestro.Console
                     }
                 }
             } while (gettin);
+
+            await host.WaitForShutdownAsync().ConfigureAwait(false);
         }
+
+        private static IHostBuilder ConfigureServices() =>
+            Host.CreateDefaultBuilder()
+                .ConfigureServices(services =>
+                    services.UseMaestro()
+                            .UseMaestroClient());
     }
 }

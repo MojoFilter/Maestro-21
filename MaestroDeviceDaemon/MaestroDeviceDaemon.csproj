@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -10,7 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Maestro.Client\Maestro.Client.csproj" />
+    <ProjectReference Include="..\Maestro.Server.Gpio\Maestro.Server.Gpio.csproj" />
+    <ProjectReference Include="..\Maestro.Server\Maestro.Server.csproj" />
+    <ProjectReference Include="..\Maestro\Maestro.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -9,12 +10,19 @@ namespace Maestro.Client
 {
     public class TcpMaestroClient : IMaestroClient
     {
-        public async Task ConnectAsync(string host, int port)
+        public TcpMaestroClient(int port, IPAddress host)
+        {
+            _port = port;
+            _host = host;
+        }
+
+        public async Task ConnectAsync(CancellationToken cancellationToken = default)
         {
             _client = new TcpClient();
-            await _client.ConnectAsync(host, port).ConfigureAwait(false);
+            await _client.ConnectAsync(_host, _port).ConfigureAwait(false);
             this.Read();
         }
+
 
         public IObservable<bool> Status => _status.AsObservable();
 
@@ -73,7 +81,10 @@ namespace Maestro.Client
         private readonly ISubject<Exception> _error = new Subject<Exception>();
         private readonly ISubject<bool> _status = new BehaviorSubject<bool>(false);
         private readonly ISubject<byte> _fade = new BehaviorSubject<byte>(0);
+        private readonly int _port;
+        private readonly IPAddress _host;
         private TcpClient _client;
         private CancellationTokenSource _readCanceller = new CancellationTokenSource();
+
     }
 }

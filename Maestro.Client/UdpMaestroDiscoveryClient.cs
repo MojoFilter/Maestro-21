@@ -1,47 +1,69 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Maestro.Client
 {
-    public class UdpMaestroDiscoveryClient
+    public class UdpMaestroDiscoveryClient : IMaestroDiscoveryClient
     {
         public IObservable<MaestroDeviceInfo> DiscoverAsync()
         {
             return Observable.Create<MaestroDeviceInfo>(obs =>
             {
                 var cancelSource = new CancellationTokenSource();
-                var client = new UdpClient();
-                client.EnableBroadcast = true;
-                var broadcastEndpoint = new IPEndPoint(IPAddress.Broadcast, 5678);
-                Task.Run(async () =>
-                {
-                    while (!cancelSource.Token.IsCancellationRequested)
-                    {
-                        var response = await client.ReceiveAsync().ConfigureAwait(false);
-                        var name = Encoding.UTF8.GetString(response.Buffer);
-                        var ip = response.RemoteEndPoint.Address.ToString();
-                        obs.OnNext(new MaestroDeviceInfo()
-                        {
-                            Address = ip,
-                            Name = name
-                        });
-                    }
-                });
-                client.SendAsync(new[] { (byte)1 }, 1, broadcastEndpoint);
+                this.ListenForAnnouncements(obs, cancelSource.Token);
+                this.SayWhoDere(obs);
                 return () => cancelSource.Cancel();
             });
         }
+
+        private async void SayWhoDere(IObserver<MaestroDeviceInfo> obs)
+        {
+            try
+            {
+                var client = new UdpClient();
+                client.EnableBroadcast = true;
+                var ep = new IPEndPoint(IPAddress.Broadcast, 5678);
+                Console.WriteLine($"Sending holla");
+                await client.SendAsync(new[] { (byte)1 }, 1, ep).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                obs.OnError(ex);
+            }
+        }
+
+        private async void ListenForAnnouncements(IObserver<MaestroDeviceInfo> obs, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var client = new UdpClient(5679);
+                client.EnableBroadcast = true;
+                while (!cancellationToken.IsCancellationRequested) {
+                    var announcement = await client.ReceiveAsync().ConfigureAwait(false);
+                    Console.WriteLine($"Got a holla back");
+                    var name = Encoding.UTF8.GetString(announcement.Buffer);
+                    Console.WriteLine($"From {name}");
+                    obs.OnNext(new MaestroDeviceInfo()
+                    {
+                        Address = announcement.RemoteEndPoint.Address.ToString(),
+                        Name = name
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    obs.OnError(ex);
+                }
+            }
+        }
     }
 
-    public struct MaestroDeviceInfo
-    {
-        public string Address { get; set; }
-        public string Name { get; set; }
-    }
+
 }

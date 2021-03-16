@@ -10,25 +10,27 @@ using System.Threading.Tasks;
 namespace Maestro.Server
 {
 
-    public class TcpMaestroServer
+    public class TcpMaestroServer : IMaestroServer
     {
-        public TcpMaestroServer(IMaestroController controller)
+        public TcpMaestroServer(IPAddress localAddress, int port, IMaestroController controller)
         {
             _controller = controller;
+            _localAddress = localAddress;
+            _port = port;
         }
 
         public IObservable<string> Status => _status.AsObservable();
 
-        public async Task Start(IPAddress localAddress, int port, CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             await _controller.InitAsync(cancellationToken).ConfigureAwait(false);
-            var server = new TcpListener(localAddress, port);
+            var server = new TcpListener(_localAddress, _port);
             using (cancellationToken.Register(() => server.Stop()))
             {
                 try
                 {
                     server.Start();
-                    this.Log($"Listening at {localAddress}:{port}");
+                    this.Log($"Listening at {_localAddress}:{_port}");
                     while (!cancellationToken.IsCancellationRequested)
                     {
                         try
@@ -106,6 +108,8 @@ namespace Maestro.Server
 
         private readonly ReplaySubject<string> _status = new ReplaySubject<string>(50);
         private IMaestroController _controller;
+        private readonly IPAddress _localAddress;
+        private readonly int _port;
         private const int CommandMessageLength = 2;
     }
 }

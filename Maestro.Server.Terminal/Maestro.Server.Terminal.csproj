@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Maestro.Server.Gpio\Maestro.Server.Gpio.csproj" />
     <ProjectReference Include="..\Maestro.Server\Maestro.Server.csproj" />
+    <ProjectReference Include="..\Maestro\Maestro.csproj" />
   </ItemGroup>
 
 </Project>
