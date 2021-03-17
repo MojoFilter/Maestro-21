@@ -1,12 +1,10 @@
-﻿<Window x:Class="MaestroCommand.MainWindow"
+﻿<Window x:Class="MaestroCommander.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MaestroCommand"
+        xmlns:local="clr-namespace:MaestroCommander.Windows"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
-</Window>
+        Title="Maestro Commander" 
+        Height="450" 
+        Width="800" />
