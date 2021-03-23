@@ -7,6 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Golden Brown.mid" />
+    <None Remove="LongSeeLight.mid" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Golden Brown.mid">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LongSeeLight.mid">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Melanchall.DryWetMidi" Version="5.1.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="ReactiveUI.WPF" Version="13.2.2" />
   </ItemGroup>

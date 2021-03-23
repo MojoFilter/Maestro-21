@@ -1,0 +1,54 @@
+﻿<Page
+    x:Class="MaestroCommander.Wiindows.InputBroker.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MaestroCommander.Wiindows.InputBroker"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded">
+
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="switchState">
+                <VisualState />
+                <VisualState x:Name="switchOn">
+                    <VisualState.StateTriggers>
+                        <StateTrigger IsActive="{Binding Switch}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="switchLight.Fill"
+                                Value="Green" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <TextBlock>Switch</TextBlock>
+            <Ellipse x:Name="switchLight"
+                     Grid.Column="1"
+                     Stroke="Yellow"
+                     StrokeThickness="1.5"
+                     Width="100"
+                     Height="100" />
+
+            <TextBlock Grid.Row="1">Fade</TextBlock>
+            <ProgressBar Grid.Row="1"
+                         Grid.Column="1"
+                         Minimum="0"
+                         Maximum="255"
+                         Value="{Binding Fade}" />
+
+        </Grid>
+    </Grid>
+</Page>

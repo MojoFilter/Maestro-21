@@ -19,7 +19,7 @@ namespace Maestro
         }
     }
 
-    internal class MaestroFactory : IMaestroFactory
+    public class MaestroFactory : IMaestroFactory
     {
         public INetworkBusiness NewNetworkBusiness() => new NetworkBusiness();
         public IMaestroController NewDebugController() => new DebugController();

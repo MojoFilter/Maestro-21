@@ -20,7 +20,7 @@ namespace Maestro.Client
         }
     }
 
-    internal class MaestroClientFactory : IMaestroClientFactory
+    public class MaestroClientFactory : IMaestroClientFactory
     {
         public MaestroClientFactory(INetworkBusiness networkBusiness)
         {

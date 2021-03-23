@@ -20,10 +20,10 @@ namespace Maestro.Console
             var clientFactory = host.Services.GetRequiredService<IMaestroClientFactory>();
             //var client = host.Services.GetRequiredService<IMaestroClient>();
 
-            Terminal.WriteLine("Listening for servers");
-            var device = await discoveryClient.DiscoverAsync().Take(1);
-            Terminal.WriteLine($"Discovered {device.Name} @ {device.Address}");
-            var client = clientFactory.NewTcpMaestroClient(IPAddress.Parse(device.Address));
+            //Terminal.WriteLine("Listening for servers");
+            //var device = await discoveryClient.DiscoverAsync().Take(1);
+            //Terminal.WriteLine($"Discovered {device.Name} @ {device.Address}");
+            var client = clientFactory.NewTcpMaestroClient(IPAddress.Parse("192.168.86.68"));
             await client.ConnectAsync().ConfigureAwait(false);
             System.Console.WriteLine("Connected AF");
 
