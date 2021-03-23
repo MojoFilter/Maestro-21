@@ -1,5 +1,6 @@
 ﻿using Maestro;
 using Maestro.Client;
+using MaestroCommander.Windows.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows;
@@ -26,6 +27,7 @@ namespace MaestroCommander.Windows
             services.UseMaestro()
                     .UseMaestroClient()
                     .UseMaestroCommander()
+                    .AddTransient<MidiDirectorViewModel>()
                     .AddTransient<MainWindow>();
 
             return services.BuildServiceProvider();

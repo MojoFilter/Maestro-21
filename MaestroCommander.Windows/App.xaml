@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:MaestroCommander.Windows"
              xmlns:commander="clr-namespace:MaestroCommander;assembly=MaestroCommander"
+             xmlns:vm="clr-namespace:MaestroCommander.Windows.ViewModels"
+             xmlns:v="clr-namespace:MaestroCommander.Windows.Views"
              Startup="Application_Startup">
     <Application.Resources>
         <DataTemplate DataType="{x:Type commander:CommanderViewModel}">
@@ -11,6 +13,10 @@
 
         <DataTemplate DataType="{x:Type commander:SandboxDeviceViewModel}">
             <local:SandboxDeviceView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:MidiDirectorViewModel}">
+            <v:MidiDirectorView />
         </DataTemplate>
     </Application.Resources>
 </Application>

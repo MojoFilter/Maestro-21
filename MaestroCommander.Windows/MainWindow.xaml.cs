@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using MaestroCommander.Windows.ViewModels;
+using System.Windows;
 
 namespace MaestroCommander.Windows
 {
@@ -7,7 +8,7 @@ namespace MaestroCommander.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(ICommanderViewModel vm)
+        public MainWindow(MidiDirectorViewModel vm)
         {
             InitializeComponent();
             this.Content = vm;
