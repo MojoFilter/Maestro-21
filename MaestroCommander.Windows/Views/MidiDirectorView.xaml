@@ -20,6 +20,31 @@
             <Button Content="Stop"
                     Command="{Binding StopCommand}" />
         </StackPanel>
-        <DataGrid ItemsSource="{Binding Channels.Values}" />
+        <ItemsControl ItemsSource="{Binding Channels.Values}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Left"
+                                   Text="{Binding Number}" />
+                        <ItemsControl ItemsSource="{Binding Notes}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Span>
+                                            <Run Text="{Binding Octave}" />:<Run Text="{Binding Name}" />
+                                        </Span>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DockPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </StackPanel>
 </UserControl>
