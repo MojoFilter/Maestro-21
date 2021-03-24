@@ -30,6 +30,13 @@ namespace Maestro
 
         public void Wake() => this.Awake = true;
 
+        public async void Tap()
+        {
+            this.Wake();
+            await Task.Delay(100).ConfigureAwait(false);
+            this.Sleep();
+        }
+
         public double Fade
         {
             get => _fade;
