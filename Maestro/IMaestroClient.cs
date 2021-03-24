@@ -16,6 +16,7 @@ namespace Maestro
         Task GetStatusAsync(CancellationToken cancellationToken = default);
         Task SetFadeAsync(byte level, CancellationToken cancellationToken = default);
         Task SleepAsync(CancellationToken cancellationToken = default);
+        Task TapAsync(CancellationToken cancellationToken = default);
         Task WakeAsync(CancellationToken cancellationToken = default);
     }
 }

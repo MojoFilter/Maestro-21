@@ -1,4 +1,6 @@
 ﻿using DynamicData;
+using Maestro;
+using Maestro.Client;
 using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Devices;
@@ -9,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -20,29 +23,58 @@ namespace MaestroCommander.Windows.ViewModels
 {
     public class MidiDirectorViewModel : ReactiveObject, IActivatableViewModel
     {
-        public MidiDirectorViewModel()
+        public MidiDirectorViewModel(IMaestroClientFactory maestroClientFactory)
         {
+            _maestroClientFactory = maestroClientFactory;
             this.LoadFileCommand = ReactiveCommand.CreateFromTask(this.LoadFileAsync);
             this.PlayCommand = ReactiveCommand.CreateFromTask(this.PlayAsync);
             this.StopCommand = ReactiveCommand.CreateFromTask(this.StopAsync);
+
+            var whenAddressIsValid = this.WhenAnyValue(x => x.ServerAddress, v => IPAddress.TryParse(v, out _));
+            this.ConnectCommand = ReactiveCommand.CreateFromTask(this.ConnectAsync, whenAddressIsValid);
+
             this.WhenActivated(() =>
             {
-                var disposables = new List<IDisposable>();
+                var disposables = new CompositeDisposable();
+                
                 var devices = OutputDevice.GetAll();
                 this.OutputDevices = devices.Select(d => d.Name);
+                this.SelectedOuputDevice = this.OutputDevices.FirstOrDefault();
                 var disposeNow = new CompositeDisposable(devices);
                 disposeNow.Dispose();
-                return disposables;
+
+                this.WhenAnyValue(x => x.SwitchStatus)
+                    .SelectMany(async on =>
+                    {
+                        if (_client is IMaestroClient)
+                        {
+                            if (on)
+                            {
+                                await _client.WakeAsync().ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                await _client.SleepAsync().ConfigureAwait(false);
+                            }
+                        }
+                        return Unit.Default;
+                    }).Subscribe()
+                    .DisposeWith(disposables);
+
+                return disposables.AsEnumerable();
             });
         }
 
         public Interaction<Unit, string> RequestFile { get; } = new Interaction<Unit, string>();
+
 
         public ICommand LoadFileCommand { get; }
 
         public ICommand PlayCommand { get; }
 
         public ICommand StopCommand { get; }
+
+        public ICommand ConnectCommand { get; }
 
         public ViewModelActivator Activator { get; } = new ViewModelActivator();
 
@@ -69,6 +101,31 @@ namespace MaestroCommander.Windows.ViewModels
             get => _channels;
             set => this.RaiseAndSetIfChanged(ref _channels, value);
         }
+
+        public string ServerAddress
+        {
+            get => _serverAddress;
+            set => this.RaiseAndSetIfChanged(ref _serverAddress, value);
+        }
+
+        public FourBitNumber SwitchChannel
+        {
+            get => _switchChannel;
+            set => this.RaiseAndSetIfChanged(ref _switchChannel, value);
+        }
+
+        public int SwitchNote
+        {
+            get => _switchNote;
+            set => this.RaiseAndSetIfChanged(ref _switchNote, value);
+        }
+
+        public bool SwitchStatus
+        {
+            get => _switchStatus;
+            set => this.RaiseAndSetIfChanged(ref _switchStatus, value);
+        }
+
 
         private async Task LoadFileAsync()
         {
@@ -110,6 +167,13 @@ namespace MaestroCommander.Windows.ViewModels
             await Task.Run(_playback.Play).ConfigureAwait(false);
         }
 
+        private async Task ConnectAsync()
+        {
+            var address = IPAddress.Parse(this.ServerAddress);
+            _client = _maestroClientFactory.NewTcpMaestroClient(address);
+            await _client.ConnectAsync().ConfigureAwait(false);            
+        }
+
         private void Playback_EventPlayed(object sender, MidiEventPlayedEventArgs e)
         {
             ChannelViewModel channel = null;
@@ -118,10 +182,18 @@ namespace MaestroCommander.Windows.ViewModels
                 case NoteOnEvent noteOn:
                     channel = this.Channels[noteOn.Channel];
                     channel.NoteOn(noteOn);
+                    if (noteOn.Channel == this.SwitchChannel && noteOn.NoteNumber == this.SwitchNote)
+                    {
+                        this.SwitchStatus = true;
+                    }
                     break;
                 case NoteOffEvent noteOff:
                     channel = this.Channels[noteOff.Channel];
                     channel.NoteOff(noteOff);
+                    if (noteOff.Channel == this.SwitchChannel && noteOff.NoteNumber == this.SwitchNote)
+                    {
+                        this.SwitchStatus = false;
+                    }
                     break;
             }
             
@@ -131,10 +203,17 @@ namespace MaestroCommander.Windows.ViewModels
         private IEnumerable<string> _outputDevices;
         private string _selectedOutputDevice;
         private Dictionary<FourBitNumber, ChannelViewModel> _channels;
-
+        private string _serverAddress = "192.168.86.68";
+        private FourBitNumber _switchChannel = (FourBitNumber)0;
+        private int _switchNote = 52;
+        private bool _switchStatus;
+        
         private MidiFile _midiFile;
         private OutputDevice _device;
         private Playback _playback;
+        private IMaestroClient _client;
+
+        private readonly IMaestroClientFactory _maestroClientFactory;
     }
 
     public class ChannelViewModel : ReactiveObject
@@ -143,6 +222,7 @@ namespace MaestroCommander.Windows.ViewModels
         {
             this.Number = number;
             _noteSource.Connect()
+                .ObserveOnDispatcher()
                 .Bind(out _notes)
                 .Subscribe();
         }

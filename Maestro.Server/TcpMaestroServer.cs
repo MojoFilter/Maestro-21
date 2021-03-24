@@ -78,6 +78,9 @@ namespace Maestro.Server
                             _controller.SetFade(buffer[1] / 255.0);
                             await this.SendFadeAsync(stream).ConfigureAwait(false);
                             break;
+                        case Commands.Tap:
+                            _controller.Tap();
+                            break;
                     }
                 }
             }

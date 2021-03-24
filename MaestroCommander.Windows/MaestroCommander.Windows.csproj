@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Clap.mid" />
     <None Remove="Golden Brown.mid" />
     <None Remove="LongSeeLight.mid" />
   </ItemGroup>
@@ -31,6 +32,12 @@
     <ProjectReference Include="..\Maestro.Client\Maestro.Client.csproj" />
     <ProjectReference Include="..\MaestroCommander\MaestroCommander.csproj" />
     <ProjectReference Include="..\Maestro\Maestro.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Clap.mid">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -10,6 +10,7 @@
 
         // primarily response messages
         UpdateState,
-        UpdateFade
+        UpdateFade,
+        Tap
     }
 }

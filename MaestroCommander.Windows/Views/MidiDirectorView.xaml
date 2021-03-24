@@ -9,6 +9,10 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:MidiDirectorViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
+        <Label>Server Address</Label>
+        <TextBox Text="{Binding ServerAddress}" />
+        <Button Content="Connect"
+                Command="{Binding ConnectCommand}" />
         <ComboBox ItemsSource="{Binding OutputDevices}"
                   SelectedItem="{Binding SelectedOuputDevice, Mode=TwoWay}" />
         <Button Content="Load File"
@@ -34,11 +38,17 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock>
-                                        <Span>
-                                            <Run Text="{Binding Octave}" />:<Run Text="{Binding Name}" />
-                                        </Span>
-                                    </TextBlock>
+                                    <Border BorderBrush="Yellow"
+                                            BorderThickness="1"
+                                            Background="Navy"
+                                            Margin="5,0"
+                                            Padding="2,0">
+                                        <TextBlock Foreground="Yellow">
+                                            <Span>
+                                                <Run Text="{Binding Octave}" /> : <Run Text="{Binding Name}" /> [<Run Text="{Binding Number}" />]
+                                            </Span>
+                                        </TextBlock>
+                                    </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -46,5 +56,45 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <Label>Output Map</Label>
+        <Grid HorizontalAlignment="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Label>Switch</Label>
+            <Label Grid.Column="1">Channel</Label>
+            <Label Grid.Column="2">Note</Label>
+            <ComboBox Grid.Column="1"
+                      Grid.Row="1"
+                      ItemsSource="{Binding Channels.Keys}"
+                      SelectedItem="{Binding SwitchChannel}" />
+            <TextBox Grid.Column="2"
+                     Grid.Row="1"
+                     Text="{Binding SwitchNote}" />
+            <Ellipse Grid.Column="3"
+                     Grid.RowSpan="2"
+                     Stroke="Black"
+                     StrokeThickness="1.5"
+                     Width="45"
+                     Margin="10,0">
+                <Ellipse.Style>
+                    <Style TargetType="Ellipse">
+                        <Setter Property="Fill" Value="DimGray" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SwitchStatus}" Value="True">
+                                <Setter Property="Fill" Value="Aquamarine" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Ellipse.Style>
+            </Ellipse>
+        </Grid>
     </StackPanel>
 </UserControl>

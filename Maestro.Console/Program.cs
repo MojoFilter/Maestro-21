@@ -85,6 +85,9 @@ namespace Maestro.Console
                         case '-':
                             await client.SleepAsync().ConfigureAwait(false);
                             break;
+                        case 't':
+                            await client.TapAsync().ConfigureAwait(false);
+                            break;
                         case 'q':
                             gettin = false;
                             break;

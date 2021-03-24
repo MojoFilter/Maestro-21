@@ -12,6 +12,7 @@ namespace Maestro
         Task InitAsync(CancellationToken cancellationToken = default);
         void SetFade(double percent);
         double GetFade();
+        void Tap();
     }
 
     internal class DebugController : IMaestroController

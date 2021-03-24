@@ -42,6 +42,13 @@ namespace Maestro.Server.Gpio
 
         public void Wake() => SetLed(true);
 
+        public async void Tap()
+        {
+            this.SetLed(true);
+            await Task.Delay(100).ConfigureAwait(false);
+            this.SetLed(false);
+        }
+
         public void SetFade(double percent)
         {
             _fade.DutyCycle = percent;
