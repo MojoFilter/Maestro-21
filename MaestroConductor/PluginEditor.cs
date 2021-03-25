@@ -8,9 +8,9 @@ namespace Maestro.Plugin
     //internal interface I
     internal sealed class PluginEditor : IVstPluginEditor
     {
-        public PluginEditor()
+        public PluginEditor(IMaestroMap maestroMap)
         {
-            _window = new MaestroConductorWindow();
+            _maestroMap = maestroMap;
         }
 
         public VstKnobMode KnobMode { get; set; }
@@ -19,7 +19,7 @@ namespace Maestro.Plugin
         {
             get
             {
-                var wpfLoc = _window.RestoreBounds.Location;
+                var wpfLoc = _window!.RestoreBounds.Location;
                 var loc = new Point((int)wpfLoc.X, (int)wpfLoc.Y);
 
                 var wpfSize = _window.RestoreBounds.Size;
@@ -30,7 +30,7 @@ namespace Maestro.Plugin
 
         public void Close()
         {
-            _window.Close();
+            _window?.Close();
         }
 
         public bool KeyDown(byte ascii, VstVirtualKey virtualKey, VstModifierKeys modifers)
@@ -45,6 +45,7 @@ namespace Maestro.Plugin
 
         public void Open(IntPtr hWnd)
         {
+            _window = new MaestroConductorWindow(_maestroMap);
             _window.Show();
         }
 
@@ -52,6 +53,7 @@ namespace Maestro.Plugin
         {
         }
 
-        private MaestroConductorWindow _window;
+        private MaestroConductorWindow? _window;
+        private readonly IMaestroMap _maestroMap;
     }
 }

@@ -4,10 +4,7 @@ using Jacobi.Vst.Plugin.Framework.Plugin;
 using MaestroConductor;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Maestro.Plugin
 {
@@ -25,7 +22,9 @@ namespace Maestro.Plugin
         {
             services.AddSingletonAll<PluginEditor>()
                     .AddSingletonAll<MidiProcessor>()
-                    .AddSingletonAll<AudioProcessor>();
+                    .AddSingletonAll<AudioProcessor>()
+                    .AddSingletonAll<MaestroMap>()
+                    .AddSingleton<MaestroConductorWindow>();
         }
 
         public static int GetPluginId()

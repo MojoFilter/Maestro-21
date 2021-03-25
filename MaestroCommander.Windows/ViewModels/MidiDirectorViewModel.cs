@@ -4,7 +4,6 @@ using Maestro.Client;
 using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Devices;
-using Melanchall.DryWetMidi.MusicTheory;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,6 @@ using System.Net;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -29,6 +27,7 @@ namespace MaestroCommander.Windows.ViewModels
             this.LoadFileCommand = ReactiveCommand.CreateFromTask(this.LoadFileAsync);
             this.PlayCommand = ReactiveCommand.CreateFromTask(this.PlayAsync);
             this.StopCommand = ReactiveCommand.CreateFromTask(this.StopAsync);
+            this.ResetCommand = ReactiveCommand.CreateFromTask(this.ResetAsync);
 
             var whenAddressIsValid = this.WhenAnyValue(x => x.ServerAddress, v => IPAddress.TryParse(v, out _));
             this.ConnectCommand = ReactiveCommand.CreateFromTask(this.ConnectAsync, whenAddressIsValid);
@@ -73,6 +72,8 @@ namespace MaestroCommander.Windows.ViewModels
         public ICommand PlayCommand { get; }
 
         public ICommand StopCommand { get; }
+
+        public ICommand ResetCommand { get; }
 
         public ICommand ConnectCommand { get; }
 
@@ -141,6 +142,7 @@ namespace MaestroCommander.Windows.ViewModels
                 _playback = _midiFile.GetPlayback(_device);
                 _playback.EventPlayed += Playback_EventPlayed;
                 _playback.Finished += _playback_Finished;
+                _playback.Loop = true;
             }
             catch (TaskCanceledException) { }
         }
@@ -156,6 +158,12 @@ namespace MaestroCommander.Windows.ViewModels
             await Task.Yield();
             _playback.Stop();
             _device.TurnAllNotesOff();
+        }
+
+        private async Task ResetAsync()
+        {
+            await Task.Yield();
+            _playback.MoveToStart();
         }
 
         private void _playback_Finished(object sender, EventArgs e)

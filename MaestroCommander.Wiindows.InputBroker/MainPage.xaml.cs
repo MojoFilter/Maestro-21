@@ -61,11 +61,12 @@ namespace MaestroCommander.Wiindows.InputBroker
                     {
                         if (s)
                         {
-                            await _client.WakeAsync().ConfigureAwait(false);
+                            await _client.TapAsync().ConfigureAwait(false);
+                            //await _client.WakeAsync().ConfigureAwait(false);
                         }
                         else
                         {
-                            await _client.SleepAsync().ConfigureAwait(false);
+                            //await _client.SleepAsync().ConfigureAwait(false);
                         }
                         return Unit.Default;
                     }).Subscribe();

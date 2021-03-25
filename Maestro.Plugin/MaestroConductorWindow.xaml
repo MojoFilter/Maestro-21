@@ -5,10 +5,51 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Maestro.Plugin"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance {x:Type local:IMaestroMap}}"
         Title="MaestroConductorWindow" Height="450" Width="800">
     <Grid>
-        <Viewbox>
-            <TextBlock>Titties</TextBlock>
-        </Viewbox>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Label>Channel</Label>
+        <ComboBox Grid.Column="1"
+                  ItemsSource="{Binding Channels}"
+                  SelectedItem="{Binding Channel}" />
+
+        <Label Grid.Row="1">Note #</Label>
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  ItemsSource="{Binding Notes}"
+                  SelectedItem="{Binding NoteNumber}"/>
+
+        <Border Grid.Row="2"
+                Grid.ColumnSpan="3"
+                Height="45">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="DimGray" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding TapStatus}"
+                                     Value="True">
+                            <Setter Property="Background" Value="Beige" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
+
+        <ScrollViewer Grid.Row="3"
+                      Grid.ColumnSpan="3">
+            <TextBlock Text="{Binding AllNotes}" />
+        </ScrollViewer>
     </Grid>
 </Window>

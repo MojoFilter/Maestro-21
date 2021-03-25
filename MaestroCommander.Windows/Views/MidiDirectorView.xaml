@@ -23,6 +23,8 @@
                     Command="{Binding PlayCommand}"/>
             <Button Content="Stop"
                     Command="{Binding StopCommand}" />
+            <Button Content="Reset"
+                    Command="{Binding ResetCommand}" />
         </StackPanel>
         <ItemsControl ItemsSource="{Binding Channels.Values}">
             <ItemsControl.ItemTemplate>
