@@ -6,10 +6,11 @@
         xmlns:local="clr-namespace:Maestro.Plugin"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance {x:Type local:IMaestroMap}}"
-        Title="MaestroConductorWindow" Height="450" Width="800">
+        Title="MaestroConductorWindow" Height="200" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
@@ -18,6 +19,8 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <Label>Channel</Label>
@@ -31,9 +34,24 @@
                   ItemsSource="{Binding Notes}"
                   SelectedItem="{Binding NoteNumber}"/>
 
+        <Label Grid.Row="0"
+               Grid.Column="3"
+               Content="Address"/>
+        <TextBox Grid.Row="0"
+                 Grid.Column="4"
+                 Width="200"
+                 Text="{Binding DeviceIp}" />
+
+        <Button Grid.Row="1"
+                Grid.Column="3"
+                Grid.ColumnSpan="2"
+                Command="{Binding ConnectCommand}"
+                Content="Connect" />
+
+
         <Border Grid.Row="2"
-                Grid.ColumnSpan="3"
-                Height="45">
+                Grid.ColumnSpan="6"
+                MinHeight="45">
             <Border.Style>
                 <Style TargetType="Border">
                     <Setter Property="Background" Value="DimGray" />
@@ -48,7 +66,7 @@
         </Border>
 
         <ScrollViewer Grid.Row="3"
-                      Grid.ColumnSpan="3">
+                      Grid.ColumnSpan="6">
             <TextBlock Text="{Binding AllNotes}" />
         </ScrollViewer>
     </Grid>

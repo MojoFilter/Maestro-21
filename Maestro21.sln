@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vst", "Vst", "{2FB533D9-6A9
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Maestro.Plugin", "Maestro.Plugin\Maestro.Plugin.csproj", "{1DCA2420-805D-4AE3-8E5F-CB270C8155E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaestroConductor", "MaestroConductor\MaestroConductor.csproj", "{17CB2988-444A-4411-A9F2-AAB723DCA808}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaestroConductor", "MaestroConductor\MaestroConductor.csproj", "{17CB2988-444A-4411-A9F2-AAB723DCA808}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -251,8 +251,8 @@ Global
 		{1DCA2420-805D-4AE3-8E5F-CB270C8155E4}.Release|x64.Build.0 = Release|Any CPU
 		{1DCA2420-805D-4AE3-8E5F-CB270C8155E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{1DCA2420-805D-4AE3-8E5F-CB270C8155E4}.Release|x86.Build.0 = Release|Any CPU
-		{17CB2988-444A-4411-A9F2-AAB723DCA808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17CB2988-444A-4411-A9F2-AAB723DCA808}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17CB2988-444A-4411-A9F2-AAB723DCA808}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{17CB2988-444A-4411-A9F2-AAB723DCA808}.Debug|Any CPU.Build.0 = Debug|x64
 		{17CB2988-444A-4411-A9F2-AAB723DCA808}.Debug|ARM.ActiveCfg = Debug|Any CPU
 		{17CB2988-444A-4411-A9F2-AAB723DCA808}.Debug|ARM.Build.0 = Debug|Any CPU
 		{17CB2988-444A-4411-A9F2-AAB723DCA808}.Debug|ARM64.ActiveCfg = Debug|Any CPU

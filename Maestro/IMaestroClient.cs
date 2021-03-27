@@ -9,6 +9,7 @@ namespace Maestro
         IObservable<bool> Status { get; }
         IObservable<byte> Fade { get; }
         IObservable<Exception> Error { get; }
+        bool IsConnected { get; }
 
         Task ConnectAsync(CancellationToken cancellationToken = default);
 

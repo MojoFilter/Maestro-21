@@ -1,39 +1,32 @@
-﻿using System.Device.Gpio;
+﻿using System;
+using System.Device.Gpio;
 using System.Device.Pwm;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Maestro.Server.Gpio
 {
-    public class GpioMaestroController : IMaestroController
+    internal class GpioMaestroController : IMaestroController
     {
-        //public async Task InitAsync(CancellationToken cancellationToken = default)
-        //{
-        //    if (LightningProvider.IsLightningEnabled)
-        //    {
-        //        LowLevelDevicesController.DefaultProvider = LightningProvider.GetAggregateProvider();
-        //    }
-        //    //var pwm = await PwmController.GetDefaultAsync();
-        //    var pwmControllers = await PwmController.GetControllersAsync(LightningPwmProvider.GetPwmProvider());
-        //    var pwm = pwmControllers[1];
-        //    _fadePin = pwm.OpenPin(FadePinNumber);
-        //    _fadePin.SetActiveDutyCyclePercentage(1.0);
-        //    _fadePin.Start();
+        public GpioMaestroController()
+        {
+            _controller = new GpioController();
+            _fade = PwmChannel.Create(0, 1, 400, 0.5);
+            _tapper = new TapperDriver(
+                TimeSpan.FromMilliseconds(100),
+                _controller,
+                TapperEnChannel,
+                TapperIn1Pin,
+                TapperIn2Pin);
+        }
 
-        //    var gpio = await GpioController.GetDefaultAsync();
-        //    _ledPin = gpio.OpenPin(LedPinNumber);
-        //    _ledPin.SetDriveMode(GpioPinDriveMode.Output);
-        //    _ledPin.Write(GpioPinValue.Low);
-        //}
 
         public async Task InitAsync(CancellationToken cancellationToken = default)
         {
             await Task.Yield();
-            _controller = new GpioController();
             _controller.OpenPin(LedPinNumber, PinMode.Output);
-
-            _fade = PwmChannel.Create(0, 1, 400, 0.5);
             _fade.Start();
+            _tapper.Init();
         }
 
         public bool IsAwake() => _ledStatus;
@@ -42,11 +35,9 @@ namespace Maestro.Server.Gpio
 
         public void Wake() => SetLed(true);
 
-        public async void Tap()
+        public void Tap()
         {
-            this.SetLed(true);
-            await Task.Delay(100).ConfigureAwait(false);
-            this.SetLed(false);
+            _tapper.Tap();
         }
 
         public void SetFade(double percent)
@@ -71,9 +62,16 @@ namespace Maestro.Server.Gpio
         //private GpioPin _ledPin;
         private bool _ledStatus = false;
         //private PwmPin _fadePin;
-        private GpioController _controller;
-        private PwmChannel _fade;
+        private readonly GpioController _controller;
+        private readonly PwmChannel _fade;
+
+        private readonly ITapper _tapper;
+
         private const int LedPinNumber = 26;
         private const int FadePinNumber = 13;
+        private const int TapperEnChannel = 1;
+        private const int TapperIn1Pin = 5;
+        private const int TapperIn2Pin = 6;
+
     }
 }

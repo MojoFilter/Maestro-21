@@ -23,6 +23,7 @@ namespace Maestro.Client
             this.Read();
         }
 
+        public bool IsConnected => _client.Connected;
 
         public IObservable<bool> Status => _status.AsObservable();
 

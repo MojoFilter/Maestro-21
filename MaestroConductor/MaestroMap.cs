@@ -1,19 +1,27 @@
 ﻿using Jacobi.Vst.Plugin.Framework;
+using Maestro.Client;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Maestro.Plugin
 {
 
     public class MaestroMap : ReactiveObject, IMaestroMap
     {
-        public MaestroMap(INoteSource noteSource, IVstPluginEvents pluginEvents)
+        public MaestroMap(
+            INoteSource noteSource, 
+            IVstPluginEvents pluginEvents,
+            IMaestroClientFactory clientFactory)
         {            
-            _noteSource = noteSource;
+            (_noteSource, _clientFactory) = (noteSource, clientFactory);
+
             IEnumerable<byte> range(int r) => Enumerable.Range(0, r).Select(x => (byte)x).ToList();
             this.Channels = range(15);
             this.Notes = range(127);
@@ -29,6 +37,10 @@ namespace Maestro.Plugin
                     .ToProperty(this, nameof(AllNotes));
 
             noteSource.Notes.Subscribe(n => Debug.WriteLine(n));
+
+            var whenIpIsValid =
+                this.WhenAnyValue(x => x.DeviceIp, s => IPAddress.TryParse(s, out _));
+            this.ConnectCommand = ReactiveCommand.CreateFromTask(this.ConnectAsync, whenIpIsValid);
         }
 
         private void PluginEvents_Opened(object? sender, EventArgs e)
@@ -37,8 +49,16 @@ namespace Maestro.Plugin
                 .Notes
                 .Where(n => n.Channel == this.Channel && n.note == this.NoteNumber)
                 .Do(_ => this.TapStatus = true)
+                .SelectMany(async n =>
+                {
+                    if (_client?.IsConnected is true)
+                    {
+                        await _client!.TapAsync().ConfigureAwait(true);
+                    }
+                    return true;
+                })
                 .Throttle(TimeSpan.FromMilliseconds(100))
-                .Subscribe(_ => this.TapStatus = false);
+                .Subscribe();// _ => this.TapStatus = false);
         }
 
         public IEnumerable<byte> Channels { get; }
@@ -63,13 +83,35 @@ namespace Maestro.Plugin
             set => this.RaiseAndSetIfChanged(ref _tapStatus, value);
         }
 
+        public string? DeviceIp
+        {
+            get => _deviceIp;
+            set => this.RaiseAndSetIfChanged(ref _deviceIp, value);
+        }
+
+
         public string AllNotes => _allNotes.Value;
 
+        public ICommand ConnectCommand { get; }
+
+        private async Task ConnectAsync()
+        {
+            if (IPAddress.TryParse(this.DeviceIp, out var ip))
+            {
+                _client = _clientFactory.NewTcpMaestroClient(ip);
+                await _client.ConnectAsync().ConfigureAwait(false);
+            }
+        }
 
         private bool _tapStatus;
         private byte _channel;
         private byte _noteNumber;
+        private string? _deviceIp;
         private ObservableAsPropertyHelper<string> _allNotes;
+
+        private IMaestroClient? _client;
+
         private readonly INoteSource _noteSource;
+        private readonly IMaestroClientFactory _clientFactory;
     }
 }

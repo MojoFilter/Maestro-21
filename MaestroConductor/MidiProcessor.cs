@@ -2,21 +2,16 @@
 using Jacobi.Vst.Plugin.Framework;
 using Maestro.Plugin;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace MaestroConductor
 {
-    
+
 
     internal sealed class MidiProcessor : IVstMidiProcessor, IVstPluginMidiSource, INoteSource
     {
-        public MidiProcessor()
-        {
-            this.Notes.Subscribe(n => Debug.WriteLine($"Processor: {n}"));
-        }
 
         public VstEventCollection Events { get; } = new VstEventCollection();
 

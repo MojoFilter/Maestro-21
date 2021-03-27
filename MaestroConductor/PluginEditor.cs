@@ -5,8 +5,12 @@ using System.Drawing;
 
 namespace Maestro.Plugin
 {
-    //internal interface I
-    internal sealed class PluginEditor : IVstPluginEditor
+    public interface IMaestroPluginEditor 
+    {
+        void Open(IntPtr hWnd);
+    }
+
+    internal sealed class PluginEditor : IVstPluginEditor, IMaestroPluginEditor
     {
         public PluginEditor(IMaestroMap maestroMap)
         {
@@ -19,10 +23,10 @@ namespace Maestro.Plugin
         {
             get
             {
-                var wpfLoc = _window!.RestoreBounds.Location;
+                var wpfLoc = _window?.RestoreBounds.Location ?? new System.Windows.Point();
                 var loc = new Point((int)wpfLoc.X, (int)wpfLoc.Y);
 
-                var wpfSize = _window.RestoreBounds.Size;
+                var wpfSize = _window?.RestoreBounds.Size ?? new System.Windows.Size();
                 var size = new Size((int)wpfSize.Width, (int)wpfSize.Height);
                 return new Rectangle(loc, size);
             }
