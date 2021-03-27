@@ -56,6 +56,6 @@ namespace Maestro.Server.Gpio
         // 0.0 = fully open
         private double _position;
 
-        private const int FullTravelMs = 1000;
+        private const int FullTravelMs = 1250;
     }
 }

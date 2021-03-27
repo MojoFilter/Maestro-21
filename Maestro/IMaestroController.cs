@@ -13,7 +13,8 @@ namespace Maestro
         void SetFade(double percent);
         double GetFade();
         void Tap();
-        Task SetGrip(double gripPercent);
+        Task SetGripAsync(double gripPercent);
+        Task ResetGripAsync();
     }
 
     internal class DebugController : IMaestroController
@@ -38,9 +39,14 @@ namespace Maestro
             this.Sleep();
         }
 
-        public Task SetGrip(double gripPercent)
+        public Task SetGripAsync(double gripPercent)
         {
             return Task.CompletedTask;
+        }
+
+        public Task ResetGripAsync()
+        {
+            throw new System.NotImplementedException();
         }
 
         public double Fade

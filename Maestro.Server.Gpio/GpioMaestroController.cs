@@ -58,9 +58,14 @@ namespace Maestro.Server.Gpio
             return _fade.DutyCycle;
         }
 
-        public async Task SetGrip(double gripPercent)
+        public async Task SetGripAsync(double gripPercent)
         {
             await _gripper.SetGrip(gripPercent).ConfigureAwait(false);
+        }
+
+        public async Task ResetGripAsync()
+        {
+            await _gripper.Reset().ConfigureAwait(false);
         }
 
         private void SetLed(bool isOn)

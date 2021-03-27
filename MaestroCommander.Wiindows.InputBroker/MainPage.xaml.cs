@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.Reactive;
 using Windows.UI.Core;
+using System.Reactive.Subjects;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -71,6 +72,13 @@ namespace MaestroCommander.Wiindows.InputBroker
                         return Unit.Default;
                     }).Subscribe();
 
+            _state.Reset
+                  .SelectMany(async _ =>
+                  {
+                      await _client.ResetGripAsync().ConfigureAwait(false);
+                      return Unit.Default;
+                  }).Subscribe();
+
             foreach (var pad in Gamepad.Gamepads.Select((gamePad,index)=>(index, gamePad)))
             {
                 Debug.WriteLine($"[{pad.index}] {pad.gamePad}");
@@ -91,15 +99,28 @@ namespace MaestroCommander.Wiindows.InputBroker
                     {
                         _state.Switch = reading.Buttons.HasFlag(GamepadButtons.A);
                         _state.Fade = (byte)(reading.RightTrigger * 255.0);
+                        if (ButtonJustPressed(reading, GamepadButtons.Y))
+                        {
+                            _state.Reset.OnNext(Unit.Default);
+                        }
                     });
+                    _lastReading = reading;
                 }
             }
+        }
+
+        private bool ButtonJustPressed(GamepadReading currentReading, GamepadButtons selection)
+        {
+            var newPressed = (selection == (currentReading.Buttons & selection));
+            var oldPressed = (selection == (_lastReading.Buttons & selection));
+            return newPressed && !oldPressed;
         }
 
         private Gamepad _gamepad;
         private ControlState _state = new ControlState();
         private IMaestroClient _client;
         private bool _isConnected;
+        private GamepadReading _lastReading;
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
@@ -120,6 +141,8 @@ namespace MaestroCommander.Wiindows.InputBroker
             get => _switch;
             set => this.RaiseAndSetIfChanged(ref _switch, value);
         }
+
+        public ISubject<Unit> Reset { get; } = new Subject<Unit>();
 
         private byte _fade;
         private bool _switch;
