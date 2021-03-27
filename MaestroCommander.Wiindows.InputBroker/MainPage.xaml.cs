@@ -51,7 +51,7 @@ namespace MaestroCommander.Wiindows.InputBroker
                     .Where(_ => _isConnected)
                     .SelectMany(async f =>
                     {
-                        await _client.SetFadeAsync(f).ConfigureAwait(false);
+                        await _client.SetGripAsync(f).ConfigureAwait(false);
                         return Unit.Default;
                     }).Subscribe();
 

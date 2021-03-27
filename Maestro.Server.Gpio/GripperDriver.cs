@@ -43,6 +43,8 @@ namespace Maestro.Server.Gpio
         public async Task Reset()
         {
             this.SetSpeed(0.75);
+            this.SetDirection(MotorDirection.Reverse);
+            await Task.Delay(FullTravelMs * 2).ConfigureAwait(false);
             this.SetDirection(MotorDirection.Forward);
             await Task.Delay(FullTravelMs).ConfigureAwait(false);
             this.SetDirection(MotorDirection.Reverse);
