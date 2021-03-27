@@ -32,6 +32,7 @@ namespace Maestro.Server.Gpio
             _controller.OpenPin(LedPinNumber, PinMode.Output);
             _fade.Start();
             _tapper?.Init();
+            _gripper.Init();
         }
 
         public bool IsAwake() => _ledStatus;
@@ -76,7 +77,7 @@ namespace Maestro.Server.Gpio
         private readonly PwmChannel _fade;
 
         private readonly ITapper? _tapper;
-        private readonly IGripperDriver _gripper;
+        private readonly IGripper _gripper;
 
         private const int LedPinNumber = 26;
         private const int FadePinNumber = 13;

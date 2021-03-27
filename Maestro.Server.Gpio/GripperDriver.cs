@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 
 namespace Maestro.Server.Gpio
 {
-    public interface IGripperDriver 
+    public interface IGripper
     {
         Task SetGrip(double gripPercent);
         Task Reset();
+        void Init();
     }
 
-    internal class GripperDriver : MotorDriver, IGripperDriver
+    internal class GripperDriver : MotorDriver, IGripper
     {
         public GripperDriver(GpioController controller, int pwmChannel, int in1, int in2) : base(controller, pwmChannel, in1, in2)
         {
