@@ -49,6 +49,9 @@ namespace Maestro.Client
         public Task TapAsync(CancellationToken cancellationToken = default)
             => this.ExecuteAsync(Commands.Tap, 0x0, cancellationToken);
 
+        public Task SetGripAsync(byte gripAmount, CancellationToken cancellationToken = default)
+            => this.ExecuteAsync(Commands.SetGrip, gripAmount, cancellationToken);
+
         private async Task ExecuteAsync(Commands command, byte arg, CancellationToken cancellationToken)
         {
             var stream = _client.GetStream();

@@ -88,6 +88,14 @@ namespace Maestro.Console
                         case 't':
                             await client.TapAsync().ConfigureAwait(false);
                             break;
+                        case 'g':
+                            Terminal.Write("%?");
+                            if (int.TryParse(Terminal.ReadLine(), out var pct))
+                            {
+                                var level = (byte)((pct / 100.0) * byte.MaxValue);
+                                await client.SetGripAsync(level).ConfigureAwait(false);
+                            }
+                            break;
                         case 'q':
                             gettin = false;
                             break;

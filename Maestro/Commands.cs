@@ -7,6 +7,7 @@
         Sleep,
         SetFade,
         GetFade,
+        SetGrip,
 
         // primarily response messages
         UpdateState,

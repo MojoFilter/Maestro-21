@@ -81,6 +81,9 @@ namespace Maestro.Server
                         case Commands.Tap:
                             _controller.Tap();
                             break;
+                        case Commands.SetGrip:
+                            await _controller.SetGrip(buffer[1] / 255.0).ConfigureAwait(false);
+                            break;
                     }
                 }
             }
