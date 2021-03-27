@@ -44,7 +44,7 @@ namespace Maestro.Server.Gpio
         {
             this.SetSpeed(0.75);
             this.SetDirection(MotorDirection.Reverse);
-            await Task.Delay(FullTravelMs * 2).ConfigureAwait(false);
+            await Task.Delay((int)(FullTravelMs * 1.25)).ConfigureAwait(false);
             this.SetDirection(MotorDirection.Forward);
             await Task.Delay(FullTravelMs).ConfigureAwait(false);
             this.SetDirection(MotorDirection.Reverse);
