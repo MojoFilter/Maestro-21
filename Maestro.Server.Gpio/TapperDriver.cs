@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Maestro.Devices.Components;
+using System;
 using System.Device.Gpio;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -6,11 +7,6 @@ using System.Reactive.Subjects;
 
 namespace Maestro.Server.Gpio
 {
-    public interface ITapper
-    {
-        void Init();
-        void Tap();
-    }
 
     internal class TapperDriver : MotorDriver, ITapper
     {
@@ -44,5 +40,35 @@ namespace Maestro.Server.Gpio
 
         private readonly ISubject<Unit> _tapSubject = new Subject<Unit>();
         private readonly TimeSpan _tapExtent;
+    }
+
+    internal class MultiTapper : ITapper
+    {
+
+        public MultiTapper(params ITapper[] tappers)
+        {
+            _tappers = tappers;
+        }
+
+        public void Init()
+        {
+            foreach (var tapper in _tappers)
+            {
+                tapper.Init();
+            }
+        }
+
+        public void Tap()
+        {
+            lock (_monitor)
+            {
+                _tappers[_index].Tap();
+                _index = (_index + 1) % _tappers.Length;
+            }
+        }
+
+        private int _index;
+        private readonly ITapper[] _tappers;
+        private readonly object _monitor = new object();
     }
 }
