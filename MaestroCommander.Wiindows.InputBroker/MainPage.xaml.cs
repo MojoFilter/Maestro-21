@@ -79,6 +79,8 @@ namespace MaestroCommander.Wiindows.InputBroker
                       return Unit.Default;
                   }).Subscribe();
 
+            _state.Tap.SubscribeAsync(_client.TapAsync);
+
             foreach (var pad in Gamepad.Gamepads.Select((gamePad,index)=>(index, gamePad)))
             {
                 Debug.WriteLine($"[{pad.index}] {pad.gamePad}");
@@ -97,11 +99,15 @@ namespace MaestroCommander.Wiindows.InputBroker
                     var reading = _gamepad.GetCurrentReading();
                     await this.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
-                        _state.Switch = reading.Buttons.HasFlag(GamepadButtons.A);
-                        _state.Fade = (byte)(reading.RightTrigger * 255.0);
+                        //_state.Switch = reading.Buttons.HasFlag(GamepadButtons.A);
+                        //_state.Fade = (byte)(reading.RightTrigger * 255.0);
                         if (ButtonJustPressed(reading, GamepadButtons.Y))
                         {
                             _state.Reset.OnNext(Unit.Default);
+                        }
+                        if (ButtonJustPressed(reading, GamepadButtons.A))
+                        {
+                            _state.Tap.OnNext(Unit.Default);
                         }
                     });
                     _lastReading = reading;
@@ -143,6 +149,7 @@ namespace MaestroCommander.Wiindows.InputBroker
         }
 
         public ISubject<Unit> Reset { get; } = new Subject<Unit>();
+        public ISubject<Unit> Tap { get; } = new Subject<Unit>();
 
         private byte _fade;
         private bool _switch;

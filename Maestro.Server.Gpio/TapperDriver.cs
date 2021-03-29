@@ -26,6 +26,8 @@ namespace Maestro.Server.Gpio
             this.SetSpeed(1.0);
 
             _tapSubject
+                .Do(_ => this.SetDirection(MotorDirection.Reverse))
+                .Throttle(_tapExtent * 1.25)
                 .Do(_ => this.SetDirection(MotorDirection.Forward))
                 .Throttle(_tapExtent)
                 .Do(_ => this.SetDirection(MotorDirection.Reverse))
