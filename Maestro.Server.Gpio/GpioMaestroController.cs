@@ -12,15 +12,16 @@ namespace Maestro.Server.Gpio
         {
             _controller = new GpioController();
             _fade = PwmChannel.Create(0, 1, 400, 0.5);
-            //_tapper = new TapperDriver(
-            //    TimeSpan.FromMilliseconds(100),
-            //    _controller,
-            //    TapperEnChannel,
-            //    TapperIn1Pin,
-            //    TapperIn2Pin);
+            _tapper = new TapperDriver(
+                TimeSpan.FromMilliseconds(100),
+                _controller,
+                TapperEnChannel,
+                TapperIn1Pin,
+                TapperIn2Pin);
+
             _gripper = new GripperDriver(
                 _controller,
-                1,
+                0,
                 GripperIn1Pin,
                 GripperIn2Pin);
         }
@@ -31,7 +32,7 @@ namespace Maestro.Server.Gpio
             await Task.Yield();
             _controller.OpenPin(LedPinNumber, PinMode.Output);
             _fade.Start();
-            _tapper?.Init();
+            _tapper.Init();
             _gripper.Init();
         }
 
@@ -43,7 +44,7 @@ namespace Maestro.Server.Gpio
 
         public void Tap()
         {
-            //_tapper.Tap();
+            _tapper.Tap();
         }
 
         public void SetFade(double percent)
@@ -81,7 +82,7 @@ namespace Maestro.Server.Gpio
         private readonly GpioController _controller;
         private readonly PwmChannel _fade;
 
-        private readonly ITapper? _tapper;
+        private readonly ITapper _tapper;
         private readonly IGripper _gripper;
 
         private const int LedPinNumber = 26;
@@ -89,8 +90,8 @@ namespace Maestro.Server.Gpio
         private const int TapperEnChannel = 1;
         private const int TapperIn1Pin = 5;
         private const int TapperIn2Pin = 6;
-        private const int GripperIn1Pin = 5;
-        private const int GripperIn2Pin = 6;
+        private const int GripperIn1Pin = 23;
+        private const int GripperIn2Pin = 24;
 
     }
 }
