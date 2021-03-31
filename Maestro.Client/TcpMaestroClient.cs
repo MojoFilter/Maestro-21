@@ -49,6 +49,15 @@ namespace Maestro.Client
         public Task TapAsync(CancellationToken cancellationToken = default)
             => this.ExecuteAsync(Commands.Tap, 0x0, cancellationToken);
 
+        public Task ExtendAsync(CancellationToken cancellationToken = default)
+            => this.ExecuteAsync(Commands.Extend, 0x0, cancellationToken);
+
+        public Task FullyExtendAsync(CancellationToken cancellationToken = default)
+            => this.ExecuteAsync(Commands.FullyExtend, 0x0, cancellationToken);
+
+        public Task RetractAsync(CancellationToken cancellationToken = default)
+            => this.ExecuteAsync(Commands.Retract, 0x0, cancellationToken);
+
         public Task SetGripAsync(byte gripAmount, CancellationToken cancellationToken = default)
             => this.ExecuteAsync(Commands.SetGrip, gripAmount, cancellationToken);
 

@@ -80,6 +80,9 @@ namespace MaestroCommander.Wiindows.InputBroker
                   }).Subscribe();
 
             _state.Tap.SubscribeAsync(_client.TapAsync);
+            _state.Extend.SubscribeAsync(_client.ExtendAsync);
+            _state.FullyExtend.SubscribeAsync(_client.FullyExtendAsync);
+            _state.Retract.SubscribeAsync(_client.RetractAsync);
 
             foreach (var pad in Gamepad.Gamepads.Select((gamePad,index)=>(index, gamePad)))
             {
@@ -101,9 +104,17 @@ namespace MaestroCommander.Wiindows.InputBroker
                     {
                         //_state.Switch = reading.Buttons.HasFlag(GamepadButtons.A);
                         //_state.Fade = (byte)(reading.RightTrigger * 255.0);
+                        if (ButtonJustPressed(reading, GamepadButtons.X))
+                        {
+                            _state.Extend.OnNext(Unit.Default);
+                        }
                         if (ButtonJustPressed(reading, GamepadButtons.Y))
                         {
-                            _state.Reset.OnNext(Unit.Default);
+                            _state.FullyExtend.OnNext(Unit.Default);
+                        }
+                        if (ButtonJustPressed(reading, GamepadButtons.B))
+                        {
+                            _state.Retract.OnNext(Unit.Default);
                         }
                         if (ButtonJustPressed(reading, GamepadButtons.A))
                         {
@@ -150,6 +161,9 @@ namespace MaestroCommander.Wiindows.InputBroker
 
         public ISubject<Unit> Reset { get; } = new Subject<Unit>();
         public ISubject<Unit> Tap { get; } = new Subject<Unit>();
+        public ISubject<Unit> Extend { get; } = new Subject<Unit>();
+        public ISubject<Unit> FullyExtend { get; } = new Subject<Unit>();
+        public ISubject<Unit> Retract { get; } = new Subject<Unit>();
 
         private byte _fade;
         private bool _switch;

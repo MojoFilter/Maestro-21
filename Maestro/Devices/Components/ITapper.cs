@@ -2,7 +2,10 @@
 {
     public interface ITapper
     {
+        void Extend();
+        void FullyExtend();
         void Init();
+        void Retract();
         void Tap();
     }
 }

@@ -15,6 +15,9 @@ namespace Maestro
         void Tap();
         Task SetGripAsync(double gripPercent);
         Task ResetGripAsync();
+        void Extend();
+        void FullyExtend();
+        void Retract();
     }
 
     internal class DebugController : IMaestroController
@@ -45,6 +48,21 @@ namespace Maestro
         }
 
         public Task ResetGripAsync()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Extend()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void FullyExtend()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Retract()
         {
             throw new System.NotImplementedException();
         }

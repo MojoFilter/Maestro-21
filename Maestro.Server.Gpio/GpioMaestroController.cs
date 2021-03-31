@@ -1,7 +1,4 @@
 ﻿using Maestro.Devices.Components;
-using System;
-using System.Device.Gpio;
-using System.Device.Pwm;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -48,6 +45,22 @@ namespace Maestro.Server.Gpio
         {
             _tapper.Tap();
         }
+
+        public void Extend()
+        {
+            _tapper.Extend();
+        }
+
+        public void FullyExtend()
+        {
+            _tapper.FullyExtend();
+        }
+
+        public void Retract()
+        {
+            _tapper.Retract();
+        }
+
 
         public void SetFade(double percent)
         {

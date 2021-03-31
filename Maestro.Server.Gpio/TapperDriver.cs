@@ -4,6 +4,7 @@ using System.Device.Gpio;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 
 namespace Maestro.Server.Gpio
 {
@@ -22,14 +23,14 @@ namespace Maestro.Server.Gpio
             this.SetSpeed(1.0);
 
             _tapSubject
-                .Do(_ => this.SetDirection(MotorDirection.Reverse))
-                .Throttle(_tapExtent * 1.25)
                 .Do(_ => this.SetDirection(MotorDirection.Forward))
                 .Throttle(_tapExtent)
                 .Do(_ => this.SetDirection(MotorDirection.Reverse))
                 .Throttle(_tapExtent)
                 .Do(_ => this.SetDirection(MotorDirection.Stop))
                 .Subscribe();
+
+            this.Stretch();
                      
         }
 
@@ -38,7 +39,35 @@ namespace Maestro.Server.Gpio
             _tapSubject.OnNext(Unit.Default);
         }
 
+        public void Extend()
+        {
+            _extendSubject.OnNext(_tapExtent);
+        }
+
+        public void FullyExtend()
+        {
+            _extendSubject.OnNext(_tapExtent * 2);
+        }
+
+        public void Retract()
+        {
+            _retractSubject.OnNext(Unit.Default);
+        }
+
+        private async void Stretch()
+        {
+            this.SetDirection(MotorDirection.Reverse);
+            await Task.Delay(_tapExtent * 1.25).ConfigureAwait(false);
+            this.SetDirection(MotorDirection.Forward);
+            await Task.Delay(_tapExtent).ConfigureAwait(false);
+            this.SetDirection(MotorDirection.Reverse);
+            await Task.Delay(_tapExtent).ConfigureAwait(false);
+            this.SetDirection(MotorDirection.Stop);
+        }
+
         private readonly ISubject<Unit> _tapSubject = new Subject<Unit>();
+        private readonly ISubject<TimeSpan> _extendSubject = new Subject<TimeSpan>();
+        private readonly ISubject<Unit> _retractSubject = new Subject<Unit>();
         private readonly TimeSpan _tapExtent;
     }
 
@@ -64,6 +93,30 @@ namespace Maestro.Server.Gpio
             {
                 _tappers[_index].Tap();
                 _index = (_index + 1) % _tappers.Length;
+            }
+        }
+
+        public void Extend()
+        {
+            foreach(var tapper in _tappers)
+            {
+                tapper.Extend();
+            }
+        }
+
+        public void FullyExtend()
+        {
+            foreach (var tapper in _tappers)
+            {
+                tapper.FullyExtend();
+            }
+        }
+
+        public void Retract()
+        {
+            foreach (var tapper in _tappers)
+            {
+                tapper.Retract();
             }
         }
 

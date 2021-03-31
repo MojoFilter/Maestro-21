@@ -87,6 +87,15 @@ namespace Maestro.Server
                         case Commands.ResetGrip:
                             await _controller.ResetGripAsync().ConfigureAwait(false);
                             break;
+                        case Commands.Extend:
+                            _controller.Extend();
+                            break;
+                        case Commands.FullyExtend:
+                            _controller.FullyExtend();
+                            break;
+                        case Commands.Retract:
+                            _controller.Retract();
+                            break;
                     }
                 }
             }

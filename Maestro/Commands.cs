@@ -13,6 +13,9 @@
         // primarily response messages
         UpdateState,
         UpdateFade,
-        Tap
+        Tap,
+        Extend,
+        FullyExtend,
+        Retract
     }
 }
