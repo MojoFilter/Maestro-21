@@ -13,6 +13,7 @@
         // primarily response messages
         UpdateState,
         UpdateFade,
+
         Tap,
         Extend,
         FullyExtend,

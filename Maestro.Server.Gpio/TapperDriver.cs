@@ -57,7 +57,7 @@ namespace Maestro.Server.Gpio
         private async void Stretch()
         {
             this.SetDirection(MotorDirection.Reverse);
-            await Task.Delay(_tapExtent * 1.25).ConfigureAwait(false);
+            await Task.Delay(_tapExtent * 1.5).ConfigureAwait(false);
             this.SetDirection(MotorDirection.Forward);
             await Task.Delay(_tapExtent).ConfigureAwait(false);
             this.SetDirection(MotorDirection.Reverse);
