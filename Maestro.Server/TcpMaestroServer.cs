@@ -59,7 +59,7 @@ namespace Maestro.Server
                 while (client.Connected  && !cancellationToken.IsCancellationRequested)
                 {
                     var readCount = await stream.ReadAsync(buffer, 0, 2);
-                    Debug.WriteLine((Commands)buffer[0]);
+                    Console.WriteLine((Commands)buffer[0]);
                     switch ((Commands)buffer[0])
                     {
                         case Commands.Wake:
