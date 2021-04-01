@@ -31,6 +31,18 @@ namespace Maestro.Server.Gpio
                 .Do(_ => this.SetDirection(MotorDirection.Stop))
                 .Subscribe();
 
+            _extendSubject
+                .Do(_ => this.SetDirection(MotorDirection.Forward))
+                .Throttle(Observable.Return)
+                .Do(_ => this.SetDirection(MotorDirection.Stop))
+                .Subscribe();
+
+            _retractSubject
+                .Do(_ => this.SetDirection(MotorDirection.Reverse))
+                .Throttle(_tapExtent)
+                .Do(_ => this.SetDirection(MotorDirection.Stop))
+                .Subscribe();
+
             this.Stretch();
                      
         }
