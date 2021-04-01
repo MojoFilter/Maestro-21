@@ -4,6 +4,7 @@ using System.Device.Gpio;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Maestro.Server.Gpio
@@ -11,9 +12,9 @@ namespace Maestro.Server.Gpio
 
     internal class TapperDriver : MotorDriver, ITapper
     {
-        public TapperDriver(TimeSpan tapExtent, GpioController controller, int pwmChannel, int in1, int in2) : base(controller, pwmChannel, in1, in2)
+        public TapperDriver(string name, TimeSpan tapExtent, GpioController controller, int pwmChannel, int in1, int in2, IDebug debug) : base(controller, pwmChannel, in1, in2)
         {
-            _tapExtent = tapExtent;
+            (_tapExtent, _name, _debug) = (tapExtent, name, debug);
         }
 
         public override void Init()
@@ -41,16 +42,19 @@ namespace Maestro.Server.Gpio
 
         public void Extend()
         {
+            this.LogAction();
             _extendSubject.OnNext(_tapExtent);
         }
 
         public void FullyExtend()
         {
+            this.LogAction();
             _extendSubject.OnNext(_tapExtent * 2);
         }
 
         public void Retract()
         {
+            this.LogAction();
             _retractSubject.OnNext(Unit.Default);
         }
 
@@ -65,10 +69,18 @@ namespace Maestro.Server.Gpio
             this.SetDirection(MotorDirection.Stop);
         }
 
+        private void LogAction([CallerMemberName]string action = "")
+        {
+            _debug.WriteLine($"[{_name}]: {action}");
+        }
+
         private readonly ISubject<Unit> _tapSubject = new Subject<Unit>();
         private readonly ISubject<TimeSpan> _extendSubject = new Subject<TimeSpan>();
         private readonly ISubject<Unit> _retractSubject = new Subject<Unit>();
+
         private readonly TimeSpan _tapExtent;
+        private readonly string _name;
+        private readonly IDebug _debug;
     }
 
     internal class MultiTapper : ITapper
