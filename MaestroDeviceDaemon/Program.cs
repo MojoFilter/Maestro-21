@@ -33,6 +33,7 @@ namespace MaestroDeviceDaemon
             Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                     services.AddTransient<CancellationTokenSource>()
+                            .AddTransient<IDebug, ConsoleDebug>()
                             .UseMaestro()
                             .UseMaestroServer()
                             .UseGpio());
