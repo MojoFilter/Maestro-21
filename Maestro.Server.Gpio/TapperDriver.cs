@@ -33,7 +33,7 @@ namespace Maestro.Server.Gpio
 
             _extendSubject
                 .Do(_ => this.SetDirection(MotorDirection.Forward))
-                .Throttle(Observable.Return)
+                .Throttle(Observable.Timer)
                 .Do(_ => this.SetDirection(MotorDirection.Stop))
                 .Subscribe();
 
